@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7f8fc">
+  <title>RisingStars — Youth group management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <section class="auth-screen" id="auth-screen">
+    <form class="auth-card" id="auth-form">
+      <a class="brand auth-brand" href="#" aria-label="RisingStars"><span class="brand-mark"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3.5 23.8 15l12.1.1-9.8 7.1 3.7 11.5L20 26.6l-9.8 7.1 3.7-11.5-9.8-7.1 12.1-.1L20 3.5Z" fill="currentColor"/><circle cx="20" cy="19" r="3.3" fill="#fff"/></svg></span><span class="brand-copy">rising<span>stars</span><small>YOUTH COMMUNITY</small></span></a>
+      <div class="eyebrow"><span class="eyebrow-dot"></span> YOUR COMMUNITY, TOGETHER</div>
+      <h1 id="auth-title">Welcome back</h1>
+      <p class="page-subtitle" id="auth-subtitle">Sign in to your group's secure workspace.</p>
+      <div class="auth-error hidden" id="auth-error" role="alert"></div>
+      <label class="field-label">Supabase project URL<input id="supabase-url" type="url" placeholder="https://your-project.supabase.co" autocomplete="url" required></label>
+      <label class="field-label">Supabase anon / publishable key<input id="supabase-key" type="password" placeholder="Paste your public anon key" autocomplete="off" required></label>
+      <div class="auth-config-hint">These are public client credentials. Never enter a service-role key here.</div>
+      <div class="auth-divider"><span>YOUR LEADER ACCOUNT</span></div>
+      <label class="field-label">Email address<input id="auth-email" type="email" placeholder="you@example.com" autocomplete="username" required></label>
+      <label class="field-label">Password<input id="auth-password" type="password" placeholder="Your password" autocomplete="current-password" required></label>
+      <button class="button button-primary auth-submit" id="auth-submit" type="submit">Connect &amp; sign in</button>
+      <p class="auth-help">Leader accounts are managed by your Supabase project administrator. Public sign-up is disabled by design.</p>
+      <a class="setup-link" href="README.md" target="_blank" rel="noopener">First time setup? Read the guide →</a>
+    </form>
+  </section>
+
+  <div class="app-shell hidden" id="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" aria-label="RisingStars home">
+        <span class="brand-mark"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3.5 23.8 15l12.1.1-9.8 7.1 3.7 11.5L20 26.6l-9.8 7.1 3.7-11.5-9.8-7.1 12.1-.1L20 3.5Z" fill="currentColor"/><circle cx="20" cy="19" r="3.3" fill="#fff"/></svg></span>
+        <span class="brand-copy">rising<span>stars</span><small>YOUTH COMMUNITY</small></span>
+      </a>
+      <div class="workspace-label">WORKSPACE</div>
+      <nav class="main-nav" aria-label="Main navigation">
+        <button class="nav-link active" data-page="dashboard"><span class="nav-icon">◫</span> Overview</button>
+        <button class="nav-link" data-page="members"><span class="nav-icon">♙</span> Members <span class="nav-count" id="member-nav-count">0</span></button>
+        <button class="nav-link" data-page="events"><span class="nav-icon">▦</span> Events</button>
+        <button class="nav-link" data-page="attendance"><span class="nav-icon">☑</span> Attendance</button>
+        <button class="nav-link" data-page="contributions"><span class="nav-icon">$</span> Contributions</button>
+        <button class="nav-link" data-page="reports"><span class="nav-icon">▥</span> Reports</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-note"><span class="note-spark">✦</span><strong>Every star has a story.</strong><p>Keep showing up for the young people who count on you.</p></div>
+        <button class="profile-button" id="profile-button"><span class="avatar avatar-purple" id="profile-avatar">RS</span><span class="profile-copy"><strong id="profile-name">Group leader</strong><small id="profile-email">Signed in</small></span><span class="profile-dots" title="Sign out">↪</span></button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="mobile-menu icon-button" id="mobile-menu" aria-label="Open navigation">☰</button>
+        <div class="breadcrumbs"><span>RisingStars</span><span class="crumb-slash">/</span><strong id="crumb-page">Overview</strong></div>
+        <div class="topbar-right"><span class="today-label" id="today-label"></span><span class="connection-status"><i></i> Cloud synced</span><button class="icon-button refresh-button" id="refresh-data" aria-label="Refresh shared data" title="Refresh shared data">↻</button><button class="top-avatar avatar avatar-purple" id="top-avatar" aria-label="Sign out"></button></div>
+      </header>
+
+      <div class="page-wrap">
+        <section class="page-section active" id="page-dashboard">
+          <div class="welcome-row">
+            <div><div class="eyebrow"><span class="eyebrow-dot"></span> YOUR COMMUNITY AT A GLANCE</div><h1 id="welcome-heading">Good morning, Jordan <span class="wave">✳</span></h1><p class="page-subtitle">Here’s what’s happening with your group this week.</p></div>
+            <button class="button button-primary" data-action="add-member"><span class="button-plus">＋</span> Add a member</button>
+          </div>
+          <div class="stats-grid">
+            <article class="stat-card"><div class="stat-top"><span>Total members</span><span class="stat-icon purple-icon">♙</span></div><div class="stat-value" id="stat-members">0</div><div class="stat-foot"><span class="stat-trend">● Active community</span><span>across all groups</span></div></article>
+            <article class="stat-card"><div class="stat-top"><span>Events this month</span><span class="stat-icon orange-icon">▦</span></div><div class="stat-value" id="stat-events">0</div><div class="stat-foot"><span class="stat-trend orange-trend">● Coming up</span><span>on the calendar</span></div></article>
+            <article class="stat-card"><div class="stat-top"><span>Avg. attendance</span><span class="stat-icon green-icon">↗</span></div><div class="stat-value" id="stat-attendance">—<small>%</small></div><div class="stat-foot"><span class="stat-trend">● Keep it growing</span><span>overall participation</span></div></article>
+            <article class="stat-card"><div class="stat-top"><span>Volunteer team</span><span class="stat-icon blue-icon">♡</span></div><div class="stat-value" id="stat-volunteers">0</div><div class="stat-foot"><span class="stat-trend">● Making it happen</span><span>dedicated volunteers</span></div></article>
+            <article class="stat-card"><div class="stat-top"><span>Contributions</span><span class="stat-icon orange-icon">$</span></div><div class="stat-value contribution-stat-value" id="stat-contributions">$0</div><div class="stat-foot"><span class="stat-trend">● Given to your group</span><span>all recorded gifts</span></div></article>
+          </div>
+          <div class="dashboard-grid">
+            <section class="panel events-panel"><div class="panel-heading"><div><div class="eyebrow">DON’T MISS A MOMENT</div><h2>Upcoming events</h2></div><button class="text-button" data-page-link="events">View calendar <span>→</span></button></div><div id="dashboard-events" class="upcoming-list"></div></section>
+            <section class="panel attendance-panel"><div class="panel-heading"><div><div class="eyebrow">SHOWING UP MATTERS</div><h2>Attendance pulse</h2></div><span class="period-pill">Last 6 events</span></div><div class="chart-area" id="attendance-chart"></div><div class="chart-legend"><span><i></i> Members attending</span><span id="chart-average">Average —</span></div></section>
+          </div>
+          <div class="dashboard-grid lower-grid">
+            <section class="panel members-panel"><div class="panel-heading"><div><div class="eyebrow">THE PEOPLE WHO MAKE US</div><h2>New members</h2></div><button class="text-button" data-page-link="members">All members <span>→</span></button></div><div id="dashboard-members" class="new-members-list"></div></section>
+            <section class="quote-card"><span class="quote-mark">“</span><p>Alone we can do so little; together we can do so much.</p><span class="quote-author">HELEN KELLER</span><div class="quote-stars">✦ &nbsp; ✧ &nbsp; ✦</div></section>
+          </div>
+        </section>
+
+        <section class="page-section" id="page-members">
+          <div class="page-title-row"><div><div class="eyebrow">YOUR PEOPLE, YOUR COMMUNITY</div><h1>Members</h1><p class="page-subtitle">Get to know every young person in your group.</p></div><button class="button button-primary" data-action="add-member"><span class="button-plus">＋</span> Add a member</button></div>
+          <section class="panel table-panel"><div class="table-toolbar"><div class="search-box"><span>⌕</span><input id="member-search" type="search" placeholder="Search members..." aria-label="Search members"></div><select id="group-filter" class="select-control" aria-label="Filter by group"><option value="">All groups</option></select><span class="result-count" id="member-result-count"></span></div><div class="table-scroll"><table><thead><tr><th>MEMBER</th><th>GROUP</th><th>AGE</th><th>JOINED</th><th>ROLE</th><th></th></tr></thead><tbody id="members-table"></tbody></table></div><div class="empty-state hidden" id="members-empty"><span>✦</span><strong>No members found</strong><p>Try another search, or add someone new to your community.</p></div></section>
+        </section>
+
+        <section class="page-section" id="page-events">
+          <div class="page-title-row"><div><div class="eyebrow">MAKE ROOM FOR GOOD THINGS</div><h1>Events</h1><p class="page-subtitle">Plan the moments that bring your community together.</p></div><button class="button button-primary" data-action="add-event"><span class="button-plus">＋</span> Create an event</button></div>
+          <div class="event-page-tools"><div class="tabs"><button class="tab-button selected" data-event-filter="upcoming">Upcoming</button><button class="tab-button" data-event-filter="past">Past events</button></div><span class="result-count" id="event-result-count"></span></div>
+          <div class="event-cards-grid" id="events-grid"></div>
+        </section>
+
+        <section class="page-section" id="page-attendance">
+          <div class="page-title-row"><div><div class="eyebrow">EVERY HELLO COUNTS</div><h1>Attendance</h1><p class="page-subtitle">Celebrate consistency and see your community show up.</p></div><button class="button button-primary" data-action="record-attendance">☑ &nbsp; Record attendance</button></div>
+          <div class="stats-grid attendance-stats"><article class="stat-card"><div class="stat-top"><span>Average participation</span><span class="stat-icon green-icon">↗</span></div><div class="stat-value" id="attendance-average">—<small>%</small></div><div class="stat-foot"><span>Across recorded events</span></div></article><article class="stat-card"><div class="stat-top"><span>Attendance records</span><span class="stat-icon purple-icon">☑</span></div><div class="stat-value" id="attendance-records">0</div><div class="stat-foot"><span>Events with attendance taken</span></div></article><article class="stat-card"><div class="stat-top"><span>Most recent event</span><span class="stat-icon orange-icon">✦</span></div><div class="stat-value recent-event-value" id="attendance-latest">—</div><div class="stat-foot"><span>Latest recorded gathering</span></div></article></div>
+          <section class="panel table-panel attendance-table-panel"><div class="panel-heading"><div><div class="eyebrow">YOUR COMMUNITY IN NUMBERS</div><h2>Event attendance</h2></div></div><div class="table-scroll"><table><thead><tr><th>EVENT</th><th>DATE</th><th>ATTENDED</th><th>PARTICIPATION</th><th></th></tr></thead><tbody id="attendance-table"></tbody></table></div><div class="empty-state hidden" id="attendance-empty"><span>☑</span><strong>No attendance recorded yet</strong><p>Record attendance after your next event to see how your community is growing.</p></div></section>
+        </section>
+
+        <section class="page-section" id="page-contributions">
+          <div class="page-title-row"><div><div class="eyebrow">EVERY GIFT HELPS US GROW</div><h1>Contributions</h1><p class="page-subtitle">Privately record and track the support behind your group.</p></div><button class="button button-primary" data-action="add-contribution"><span class="button-plus">＋</span> Record a contribution</button></div>
+          <div class="stats-grid contributions-stats"><article class="stat-card"><div class="stat-top"><span>Total recorded</span><span class="stat-icon green-icon">$</span></div><div class="stat-value contribution-stat-value" id="contribution-total">$0</div><div class="stat-foot"><span>Recorded gifts and support</span></div></article><article class="stat-card"><div class="stat-top"><span>This month</span><span class="stat-icon purple-icon">↗</span></div><div class="stat-value contribution-stat-value" id="contribution-month">$0</div><div class="stat-foot"><span>Received this calendar month</span></div></article><article class="stat-card"><div class="stat-top"><span>Contributions logged</span><span class="stat-icon orange-icon">✦</span></div><div class="stat-value" id="contribution-count">0</div><div class="stat-foot"><span>Individual records</span></div></article></div>
+          <section class="panel table-panel"><div class="table-toolbar"><div class="search-box"><span>⌕</span><input id="contribution-search" type="search" placeholder="Search contributions..." aria-label="Search contributions"></div><span class="privacy-note">🔒 Visible to signed-in leaders</span><button class="text-button export-contributions" id="export-contributions">↓ Export CSV</button><span class="result-count" id="contribution-result-count"></span></div><div class="table-scroll"><table><thead><tr><th>CONTRIBUTOR</th><th>DATE</th><th>FOR</th><th>METHOD</th><th>AMOUNT</th><th></th></tr></thead><tbody id="contributions-table"></tbody></table></div><div class="empty-state hidden" id="contributions-empty"><span>$</span><strong>No contributions recorded yet</strong><p>When you receive support, add a private record here. This app does not process payments.</p></div></section>
+          <div class="contribution-disclaimer">Records are for bookkeeping only. No payment details or card information are collected or stored.</div>
+        </section>
+
+        <section class="page-section" id="page-reports">
+          <div class="page-title-row"><div><div class="eyebrow">GROWTH WORTH CELEBRATING</div><h1>Community reports</h1><p class="page-subtitle">A snapshot of your group's activity and participation.</p></div><button class="button button-secondary" id="export-report">↓ &nbsp; Export members</button></div>
+          <div class="stats-grid"><article class="stat-card"><div class="stat-top"><span>Community size</span><span class="stat-icon purple-icon">♙</span></div><div class="stat-value" id="report-members">0</div><div class="stat-foot"><span>Registered members</span></div></article><article class="stat-card"><div class="stat-top"><span>Events hosted</span><span class="stat-icon orange-icon">▦</span></div><div class="stat-value" id="report-events">0</div><div class="stat-foot"><span>Events on your calendar</span></div></article><article class="stat-card"><div class="stat-top"><span>Attendance rate</span><span class="stat-icon green-icon">↗</span></div><div class="stat-value" id="report-attendance">—<small>%</small></div><div class="stat-foot"><span>Average across recorded events</span></div></article><article class="stat-card"><div class="stat-top"><span>Groups represented</span><span class="stat-icon blue-icon">♡</span></div><div class="stat-value" id="report-groups">0</div><div class="stat-foot"><span>Different age groups</span></div></article></div>
+          <section class="panel report-panel"><div class="panel-heading"><div><div class="eyebrow">BUILT AROUND BELONGING</div><h2>Members by group</h2></div></div><div id="group-report" class="group-report"></div></section>
+        </section>
+        <footer class="footer"><span>Made for the moments that matter <b>✦</b></span><span>RisingStars Community Manager</span></footer>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="modal-backdrop" role="presentation">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-header"><div><div class="eyebrow" id="modal-eyebrow">LET’S GET STARTED</div><h2 id="modal-title"></h2></div><button class="modal-close" id="modal-close" aria-label="Close dialog">×</button></div><form id="modal-form"><div class="modal-body" id="modal-body"></div><div class="modal-actions"><button type="button" class="button button-danger hidden" id="modal-delete">Delete</button><span class="modal-action-spacer"></span><button type="button" class="button button-secondary" id="modal-cancel">Cancel</button><button type="submit" class="button button-primary" id="modal-submit">Save</button></div></form></section>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
